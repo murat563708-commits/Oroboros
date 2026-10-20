@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function mem(g) { return exists(/databases/$(db)/documents/groups/$(g)/members/$(request.auth.uid)); }
+    function role(g) { return get(/databases/$(db)/documents/groups/$(g)/members/$(request.auth.uid)).data.role; }
+    function staff(g) { return mem(g) && role(g) in ['owner', 'mod']; }
+    function inv(c) { return /databases/$(db)/documents/invites/$(c); }
+
+    match /users/{u} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == u && request.resource.data.keys().hasOnly(['p']) && request.resource.data.p.size() < 30000;
+      match /groups/{g} {
+        allow read, write: if request.auth != null && request.auth.uid == u;
+      }
+    }
+    match /invites/{c} {
+      allow get: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.o == request.auth.uid;
+    }
+    match /groups/{g} {
+      allow read: if request.auth != null && mem(g);
+      allow create: if request.auth != null && request.resource.data.o == request.auth.uid;
+      allow update: if mem(g) && role(g) == 'owner';
+
+      match /members/{u} {
+        allow read: if mem(g);
+        allow create: if request.auth != null && request.auth.uid == u && (
+          (request.resource.data.role == 'owner' && getAfter(/databases/$(db)/documents/groups/$(g)).data.o == u) ||
+          (request.resource.data.role == 'member' && exists(inv(request.resource.data.code)) && get(inv(request.resource.data.code)).data.g == g));
+        allow update: if mem(g) && role(g) == 'owner' && u != request.auth.uid && request.resource.data.role in ['member', 'mod'];
+        allow delete: if request.auth != null && (
+          (request.auth.uid == u && resource.data.role != 'owner') ||
+          (mem(g) && role(g) == 'owner' && u != request.auth.uid) ||
+          (staff(g) && resource.data.role == 'member'));
+      }
+      match /channels/{c} {
+        allow read: if mem(g);
+        allow create, update, delete: if staff(g);
+        match /messages/{m} {
+          allow read: if mem(g);
+          allow create: if mem(g) && request.resource.data.u == request.auth.uid;
+          allow delete: if mem(g) && (resource.data.u == request.auth.uid || staff(g));
+        }
+        match /peers/{u} {
+          allow read: if mem(g);
+          allow write: if mem(g) && request.auth.uid == u;
+        }
+        match /sig/{s} {
+          allow create: if mem(g) && request.resource.data.from == request.auth.uid;
+          allow read, delete: if mem(g) && resource.data.to == request.auth.uid;
+        }
+      }
+    }
+  }
+}
