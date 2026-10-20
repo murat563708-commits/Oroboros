@@ -123,7 +123,7 @@ footer::before{content:"";display:block;height:1px;max-width:520px;margin:0 auto
 .lf{max-width:320px;width:100%;margin:auto;display:flex;flex-direction:column;gap:10px}
 .in{background:rgba(0,0,0,.2);border:0;box-shadow:inset 0 0 0 1px var(--line);color:var(--text);padding:11px 14px;font:inherit}
 .in:focus{outline:none;box-shadow:inset 0 0 0 1px var(--gold)}
-.lf .btn{width:100%}.tag{color:var(--gold);font-size:.7rem;margin-left:6px}
+.lf .btn{width:100%}.mb .lf{margin:0;max-width:none}.tag{color:var(--gold);font-size:.7rem;margin-left:6px}
 .sb{background:none;border:0;color:var(--muted);font-size:.72rem;cursor:pointer;margin-left:6px}.sb:hover{color:var(--text)}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}}
 @media (prefers-reduced-motion:reduce){.card,.btn,nav button::after{transition:none}#intro .oro,#intro span{animation:none}}
@@ -171,6 +171,7 @@ footer::before{content:"";display:block;height:1px;max-width:520px;margin:0 auto
 <dialog id="pd">
   <div class="mb">
     <h2 style="margin:0">Profilim</h2>
+    <div id="acc"></div>
     <div><b id="pl" style="font-size:2rem"></b> <span id="pt" style="color:var(--muted)"></span></div>
     <div class="bar"><i id="pbar"></i></div>
     <p id="ps"></p>
@@ -211,7 +212,7 @@ function toast(t){var e=document.getElementById("toast");e.textContent=t;e.class
 function showPr(){document.getElementById("pmini").style.width=(pr.p%100)+"%";document.getElementById("pb").title="Seviye "+Math.floor(pr.p/100)+" · "+pr.p+" puan"}
 function watch(i){var c=C[i];if(pr.w.indexOf(i)>=0){toast("Bunu zaten izledin, tekrar puan verilmez");return}
  pr.w.push(i);pr.p+=XP[c[1]];savePr();showPr();render();toast("+"+XP[c[1]]+" puan · "+c[0])}
-function openP(){var d=document,cnt=function(t){return pr.w.filter(function(i){return C[i][1]==t}).length};
+function openP(){acc();var d=document,cnt=function(t){return pr.w.filter(function(i){return C[i][1]==t}).length};
  d.getElementById("pl").textContent="Seviye "+Math.floor(pr.p/100);d.getElementById("pt").textContent=pr.p+" puan";
  d.getElementById("pbar").style.width=(pr.p%100)+"%";
  d.getElementById("ps").textContent="İzlenen: "+cnt("Dizi")+" dizi, "+cnt("Film")+" film, "+cnt("Anime")+" anime. Sonraki seviyeye "+(100-pr.p%100)+" puan kaldı.";
@@ -264,13 +265,12 @@ function B(p,t,f){var b=E("button","chb",t);b.onclick=f;p.appendChild(b)}
 function role(){var m=gm.find(function(x){return x.id==A.uid});return m?m.role:""}
 function staff(){var r=role();return r=="owner"||r=="mod"}
 function nm(){return A.displayName||"Üye"}
-async function openChat(){
- if(!openChat.i){openChat.i=1;$("chs").textContent="Bağlanıyor...";
-  try{var b="https://cdn.jsdelivr.net/npm/firebase@10.12.2/";await ld(b+"firebase-app-compat.js");await Promise.all([ld(b+"firebase-auth-compat.js"),ld(b+"firebase-firestore-compat.js")]);
-   firebase.initializeApp(FBC);AU=firebase.auth();F=firebase.firestore();
-   AU.onAuthStateChanged(function(u){A=u;["gl","gm","gd","cl","ms","pe"].forEach(un);vLeave();g=null;ch=null;GL=[];if(u)watchGroups();draw()})
-  }catch(e){$("chs").textContent="Bağlanılamadı";return}}
- draw()}
+async function initFB(){if(initFB.i)return;initFB.i=1;
+ try{var b="https://cdn.jsdelivr.net/npm/firebase@10.12.2/";await ld(b+"firebase-app-compat.js");await Promise.all([ld(b+"firebase-auth-compat.js"),ld(b+"firebase-firestore-compat.js")]);
+  firebase.initializeApp(FBC);AU=firebase.auth();F=firebase.firestore();
+  AU.onAuthStateChanged(function(u){var was=A;A=u;["gl","gm","gd","cl","ms","pe"].forEach(un);vLeave();g=null;ch=null;GL=[];if(u)watchGroups();if(u&&!was&&$("pd").open){$("pd").close();toast("Giriş yapıldı")}acc();draw()})
+ }catch(e){initFB.i=0;$("chs").textContent="Bağlanılamadı"}}
+async function openChat(){if(!AU)$("chs").textContent="Bağlanıyor...";await initFB();draw()}
 function watchGroups(){uns.gl=F.collection("users/"+A.uid+"/groups").onSnapshot(function(s){GL=s.docs.map(function(d){return {id:d.id,n:d.data().n}});if(g&&!GL.some(function(x){return x.id==g}))selG(null);else draw()})}
 function selG(id){["gm","gd","cl","ms","pe"].forEach(un);vLeave();g=id;ch=null;gm=[];chl=[];GD={};
  if(id){var bye=function(){F.doc("users/"+A.uid+"/groups/"+id).delete();if(g==id)selG(null)};
@@ -284,7 +284,7 @@ function pickCh(c){un("ms");un("pe");vLeave();ch=c;MS=[];PL=[];
  draw()}
 function draw(){if(!AU)return;var l=$("chl"),p=$("chp"),h=$("cht"),s=$("chs");l.textContent="";p.textContent="";
  $("cc").style.display=A&&ch&&ch.type=="text"?"":"none";
- if(!A){h.textContent="Giriş";s.textContent="Sohbet özeldir. Giriş yap, grup kur ya da davet koduyla katıl.";loginView();return}
+ if(!A){h.textContent="Giriş gerekli";s.textContent="Sohbet özeldir.";var m0=$("msgs");m0.textContent="";var f0=E("div","lf");f0.appendChild(E("p","empty","Sohbeti kullanmak için profil hesabınla giriş yapmalısın."));var b0=E("button","btn play","Giriş yap / Kayıt ol");b0.onclick=openP;f0.appendChild(b0);m0.appendChild(f0);return}
  l.appendChild(E("h3","","Gruplarım"));
  GL.forEach(function(x){var b=E("button","chb"+(x.id==g?" on":""),x.n);b.onclick=function(){selG(x.id)};l.appendChild(b)});
  B(l,"+ Grup kur",newG);B(l,"Koda katıl",joinG);
@@ -302,12 +302,15 @@ function draw(){if(!AU)return;var l=$("chl"),p=$("chp"),h=$("cht"),s=$("chs");l.
  var m=$("msgs");
  if(!g){m.textContent="";m.appendChild(E("p","empty","Bir grup kur ya da davet koduyla katıl. Gruplar sadece üyelerine görünür."))}
  else if(ch&&ch.type=="voice")drawVoice();else if(ch)drawMsgs();else{m.textContent=""}}
-function loginView(){var m=$("msgs");m.textContent="";var f=E("div","lf");
+function acc(){var d=$("acc");if(!d)return;d.textContent="";
+ if(!AU){d.appendChild(E("p","empty","Hesap sistemi yükleniyor..."));return}
+ if(A){d.appendChild(E("p","",(A.displayName||"Üye")+" · "+(A.email||"")));var o=E("button","btn more","Hesaptan çıkış yap");o.onclick=function(){AU.signOut()};d.appendChild(o);return}
+ var f=E("div","lf");
  f.innerHTML='<input id="ln" class="in" maxlength="20" placeholder="Kullanıcı adı (kayıt için)"><input id="le" class="in" type="email" placeholder="E-posta"><input id="lp" class="in" type="password" placeholder="Şifre (en az 6)"><button class="btn play" id="l1">Giriş yap</button><button class="btn more" id="l2">Kayıt ol</button><button class="btn more" id="l3">Google ile gir</button>';
- m.appendChild(f);[0,1,2].forEach(function(k){$("l"+(k+1)).onclick=function(){auth(k)}})}
+ d.appendChild(f);[0,1,2].forEach(function(k){$("l"+(k+1)).onclick=function(){auth(k)}})}
 async function auth(k){var e=$("le").value.trim(),p=$("lp").value,n=$("ln").value.trim();
  try{if(k==2)await AU.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-  else if(k==1){if(!n){toast("Kullanıcı adı yaz");return}var c=await AU.createUserWithEmailAndPassword(e,p);await c.user.updateProfile({displayName:n});A=AU.currentUser;draw()}
+  else if(k==1){if(!n){toast("Kullanıcı adı yaz");return}var c=await AU.createUserWithEmailAndPassword(e,p);await c.user.updateProfile({displayName:n});A=AU.currentUser;acc();draw()}
   else await AU.signInWithEmailAndPassword(e,p)}
  catch(x){toast({"auth/invalid-credential":"E-posta veya şifre hatalı","auth/email-already-in-use":"Bu e-posta zaten kayıtlı","auth/weak-password":"Şifre en az 6 karakter olmalı","auth/invalid-email":"E-posta geçersiz"}[x.code]||"Giriş başarısız")}}
 async function newG(){var n=(prompt("Grup adı")||"").trim().slice(0,30);if(!n)return;
@@ -351,7 +354,7 @@ async function vJoin(){var st;try{st=await navigator.mediaDevices.getUserMedia({
 function vLeave(){if(!V)return;var v=V;V=null;v.s.getTracks().forEach(function(t){t.stop()});
  Object.keys(PC).forEach(function(k){PC[k].close();var a=$("a_"+k);if(a)a.remove()});PC={};PQ={};un("sg");v.me.delete().catch(function(){});drawVoice()}
 addEventListener("pagehide",function(){if(V)V.me.delete()});
-$("cs").onclick=sendM;
+$("cs").onclick=sendM;initFB();
 $("ci").addEventListener("keydown",function(e){if(e.key=="Enter")sendM()});
 render();
 </script>
