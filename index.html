@@ -44,7 +44,7 @@ nav button.on::after,nav button:hover::after{transform:scaleX(1)}
 #q::placeholder{color:var(--muted)}
 #q:focus{outline:none;border-bottom-color:var(--gold)}
 .pts{display:flex;flex-direction:column;align-items:center;gap:5px;background:none;color:var(--text);border:0;padding:2px;cursor:pointer;flex:none}
-.pts .av{display:grid;place-items:center;width:38px;height:38px;color:#1a0a11;background:linear-gradient(135deg,#e6cc8a,#a9833a);clip-path:polygon(25% 4%,75% 4%,100% 50%,75% 96%,25% 96%,0 50%)}
+.pts .av{display:grid;place-items:center;width:38px;height:38px;color:#1a0a11;background:linear-gradient(135deg,#e6cc8a,#a9833a);border-radius:50%}
 .mini{display:block;width:34px;height:3px;background:rgba(128,128,128,.35);overflow:hidden}
 .mini i{display:block;height:100%;width:0;background:var(--gold);transition:width .4s}
 
@@ -113,7 +113,7 @@ footer::before{content:"";display:block;height:1px;max-width:520px;margin:0 auto
 .cm{display:flex;flex-direction:column;min-width:0}
 .ch{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;padding:14px 20px;box-shadow:0 1px 0 var(--line)}.ch b{font-family:var(--serif);font-size:1.25rem}.ch span{color:var(--muted);font-size:.8rem}
 #msgs{flex:1;overflow:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px}
-.m{display:flex;gap:12px}.av2{flex:none;width:36px;height:36px;display:grid;place-items:center;font-weight:700;color:#1a0a11;clip-path:polygon(25% 4%,75% 4%,100% 50%,75% 96%,25% 96%,0 50%)}
+.m{display:flex;gap:12px}.av2{flex:none;width:36px;height:36px;display:grid;place-items:center;font-weight:700;color:#1a0a11;border-radius:50%}
 .m b{font-size:.92rem}.m time{color:var(--muted);font-size:.72rem;margin-left:8px}.m p{margin:2px 0 0;overflow-wrap:anywhere;line-height:1.45}
 .del{margin-left:8px;background:none;border:0;color:var(--muted);font-size:.72rem;cursor:pointer}
 .cc{display:flex;gap:10px;padding:14px 20px;box-shadow:0 -1px 0 var(--line)}
@@ -123,7 +123,7 @@ footer::before{content:"";display:block;height:1px;max-width:520px;margin:0 auto
 .lf{max-width:320px;width:100%;margin:auto;display:flex;flex-direction:column;gap:10px}
 .in{background:rgba(0,0,0,.2);border:0;box-shadow:inset 0 0 0 1px var(--line);color:var(--text);padding:11px 14px;font:inherit}
 .in:focus{outline:none;box-shadow:inset 0 0 0 1px var(--gold)}
-.lf .btn{width:100%}.mb .lf{margin:0;max-width:none}.tag{color:var(--gold);font-size:.7rem;margin-left:6px}
+.lf .btn{width:100%}.pav{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font:700 1.6rem var(--sans);color:#1a0a11;background:linear-gradient(135deg,#e6cc8a,#a9833a);margin-bottom:8px}#acc .btn{margin:6px 8px 0 0}.mb .lf{margin:0;max-width:none}.tag{color:var(--gold);font-size:.7rem;margin-left:6px}
 .sb{background:none;border:0;color:var(--muted);font-size:.72rem;cursor:pointer;margin-left:6px}.sb:hover{color:var(--text)}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}}
 @media (prefers-reduced-motion:reduce){.card,.btn,nav button::after{transition:none}#intro .oro,#intro span{animation:none}}
@@ -254,7 +254,7 @@ var iv=document.getElementById("intro");function hideIntro(){iv.classList.add("o
 document.getElementById("pb").onclick=openP;document.getElementById("pc").onclick=function(){document.getElementById("pd").close()};document.getElementById("pr").onclick=function(){pr={p:100,w:[]};savePr();showPr();render();openP()};showPr();
 document.getElementById("chips").addEventListener("click",function(e){var b=e.target.closest(".chip");if(!b)return;genre=b.dataset.g;chips();render()});chips();
 var FBC={apiKey:"AIzaSyDaTmhGn_bqRrzrbvEp5XAX85lfvv1RGuE",authDomain:"oroboros-ed030.firebaseapp.com",projectId:"oroboros-ed030",storageBucket:"oroboros-ed030.firebasestorage.app",messagingSenderId:"988397906870",appId:"1:988397906870:web:cb5dc20f23f522df6caf17"};
-var A=null,F=null,AU=null,GL=[],g=null,GD={},gm=[],ch=null,chl=[],MS=[],PL=[],uns={},lastT=0,V=null,PC={},PQ={};
+var PH={},PF={};var A=null,F=null,AU=null,GL=[],g=null,GD={},gm=[],ch=null,chl=[],MS=[],PL=[],uns={},lastT=0,V=null,PC={},PQ={};
 function $(i){return document.getElementById(i)}
 function E(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
 function hc(s){var h=0;s=String(s);for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;return "hsl("+h+",45%,62%)"}
@@ -268,7 +268,7 @@ function nm(){return A.displayName||"Üye"}
 async function initFB(){if(initFB.i)return;initFB.i=1;
  try{var b="https://cdn.jsdelivr.net/npm/firebase@10.12.2/";await ld(b+"firebase-app-compat.js");await Promise.all([ld(b+"firebase-auth-compat.js"),ld(b+"firebase-firestore-compat.js")]);
   firebase.initializeApp(FBC);AU=firebase.auth();F=firebase.firestore();
-  AU.onAuthStateChanged(function(u){var was=A;A=u;["gl","gm","gd","cl","ms","pe"].forEach(un);vLeave();g=null;ch=null;GL=[];if(u)watchGroups();if(u&&!was&&$("pd").open){$("pd").close();toast("Giriş yapıldı")}acc();draw()})
+  AU.onAuthStateChanged(function(u){var was=A;A=u;["gl","gm","gd","cl","ms","pe"].forEach(un);vLeave();g=null;ch=null;GL=[];if(u)watchGroups();if(u&&!was&&$("pd").open){$("pd").close();toast("Giriş yapıldı")}acc();draw();if(u)getPh(u.uid);setAv()})
  }catch(e){initFB.i=0;$("chs").textContent="Bağlanılamadı"}}
 async function openChat(){if(!AU)$("chs").textContent="Bağlanıyor...";await initFB();draw()}
 function watchGroups(){uns.gl=F.collection("users/"+A.uid+"/groups").onSnapshot(function(s){GL=s.docs.map(function(d){return {id:d.id,n:d.data().n}});if(g&&!GL.some(function(x){return x.id==g}))selG(null);else draw()})}
@@ -302,9 +302,17 @@ function draw(){if(!AU)return;var l=$("chl"),p=$("chp"),h=$("cht"),s=$("chs");l.
  var m=$("msgs");
  if(!g){m.textContent="";m.appendChild(E("p","empty","Bir grup kur ya da davet koduyla katıl. Gruplar sadece üyelerine görünür."))}
  else if(ch&&ch.type=="voice")drawVoice();else if(ch)drawMsgs();else{m.textContent=""}}
+function setAv(){var a=document.querySelector("#pb .av");if(!a)return;var p=A&&PH[A.uid];a.style.background=p?"url("+p+") center/cover":"";a.firstElementChild.style.display=p?"none":""}
+function getPh(id){if(PF[id])return;PF[id]=1;F.doc("users/"+id).get().then(function(d){PH[id]=(d.data()||{}).p||"";setAv();acc();if(ch&&ch.type=="text")drawMsgs()}).catch(function(){PH[id]=""})}
+function pickPh(f){if(!f||!A)return;var r=new FileReader();r.onload=function(){var im=new Image();im.onerror=function(){toast("Bu fotoğraf açılamadı")};im.onload=function(){var c=document.createElement("canvas");c.width=c.height=128;var m=Math.min(im.width,im.height);c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,128,128);savePh(c.toDataURL("image/jpeg",.8))};im.src=r.result};r.readAsDataURL(f)}
+async function savePh(p){try{await F.doc("users/"+A.uid).set({p:p});PH[A.uid]=p;setAv();acc();if(ch&&ch.type=="text")drawMsgs();toast(p?"Fotoğraf kaydedildi":"Fotoğraf kaldırıldı")}catch(e){toast("Fotoğraf kaydedilemedi")}}
 function acc(){var d=$("acc");if(!d)return;d.textContent="";
  if(!AU){d.appendChild(E("p","empty","Hesap sistemi yükleniyor..."));return}
- if(A){d.appendChild(E("p","",(A.displayName||"Üye")+" · "+(A.email||"")));var o=E("button","btn more","Hesaptan çıkış yap");o.onclick=function(){AU.signOut()};d.appendChild(o);return}
+ if(A){var av=E("div","pav");if(PH[A.uid])av.style.background="url("+PH[A.uid]+") center/cover";else av.textContent=(A.displayName||"?").charAt(0).toUpperCase();d.appendChild(av);
+  var fi=E("input");fi.type="file";fi.accept="image/*";fi.hidden=true;fi.onchange=function(){pickPh(fi.files[0])};d.appendChild(fi);
+  var b1=E("button","btn more","Fotoğraf seç");b1.onclick=function(){fi.click()};d.appendChild(b1);
+  if(PH[A.uid]){var b2=E("button","btn more","Fotoğrafı kaldır");b2.onclick=function(){savePh("")};d.appendChild(b2)}
+  d.appendChild(E("p","",(A.displayName||"Üye")+" · "+(A.email||"")));var o=E("button","btn more","Hesaptan çıkış yap");o.onclick=function(){AU.signOut()};d.appendChild(o);return}
  var f=E("div","lf");
  f.innerHTML='<input id="ln" class="in" maxlength="20" placeholder="Kullanıcı adı (kayıt için)"><input id="le" class="in" type="email" placeholder="E-posta"><input id="lp" class="in" type="password" placeholder="Şifre (en az 6)"><button class="btn play" id="l1">Giriş yap</button><button class="btn more" id="l2">Kayıt ol</button><button class="btn more" id="l3">Google ile gir</button>';
  d.appendChild(f);[0,1,2].forEach(function(k){$("l"+(k+1)).onclick=function(){auth(k)}})}
@@ -323,7 +331,7 @@ async function joinG(){var c=(prompt("Davet kodu")||"").trim().toUpperCase();if(
 function newC(){var n=(prompt("Kanal adı")||"").trim().slice(0,24);if(!n)return;var v=confirm("Sesli kanal mı? Tamam: sesli, İptal: yazı kanalı");
  F.collection("groups/"+g+"/channels").add({n:n,type:v?"voice":"text",t:T()}).catch(function(){toast("Kanal açılamadı")})}
 function drawMsgs(){var el=$("msgs");if(!A||!ch||ch.type!="text")return;el.textContent="";if(!MS.length)el.appendChild(E("p","empty","Bu kanalda henüz mesaj yok. İlk mesajı sen yaz."));
- MS.forEach(function(m){var box=E("div","m"),av=E("div","av2",(m.n||"?").charAt(0).toUpperCase()),r=E("div"),hd=E("div");av.style.background=hc(m.u);
+ MS.forEach(function(m){var box=E("div","m"),av=E("div","av2",(m.n||"?").charAt(0).toUpperCase()),r=E("div"),hd=E("div");av.style.background=hc(m.u);if(PH[m.u]){av.style.background="url("+PH[m.u]+") center/cover";av.textContent=""}else if(PH[m.u]===undefined)getPh(m.u);
   hd.appendChild(E("b","",m.n||"Üye"));hd.appendChild(E("time","",m.t&&m.t.toDate?m.t.toDate().toLocaleTimeString("tr",{hour:"2-digit",minute:"2-digit"}):""));
   if(m.u==A.uid||staff()){var d=E("button","del","Sil");d.onclick=function(){F.doc("groups/"+g+"/channels/"+ch.id+"/messages/"+m.id).delete()};hd.appendChild(d)}
   r.appendChild(hd);r.appendChild(E("p","",m.x));box.appendChild(av);box.appendChild(r);el.appendChild(box)});el.scrollTop=el.scrollHeight}
