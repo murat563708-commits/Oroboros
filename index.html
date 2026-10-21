@@ -454,6 +454,8 @@ async function vJoin(){var st;
  startMeter();listMics();drawVoice()}
 function vLeave(){if(!V)return;var v=V;V=null;stopMeter();v.s.getTracks().forEach(function(t){t.stop()});
  Object.keys(PC).forEach(function(k){PC[k].close();var a=$("a_"+k);if(a)a.remove()});PC={};PQ={};HS={};un("sg");v.me.delete().catch(function(){});drawVoice()}
+ var acc0=acc;
+acc=function(){acc0();var d=$("acc");if(d&&A){var r=E("button","btn more","Şifre sıfırlama maili gönder");r.onclick=async function(){try{await AU.sendPasswordResetEmail(A.email);toast("Sıfırlama bağlantısı e-postana gönderildi")}catch(e){toast("Gönderilemedi, tekrar dene")}};d.appendChild(r)}};
 </script>
 </body>
 </html>
