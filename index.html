@@ -365,6 +365,95 @@ addEventListener("pagehide",function(){if(V)V.me.delete()});
 $("cs").onclick=sendM;initFB();
 $("ci").addEventListener("keydown",function(e){if(e.key=="Enter")sendM()});
 render();
+ /* ===== OROBOROS YAMA v2 ===== */
+var MLIM=80,HM=false,KEEP=0,MIC="",MD=[],LV=null,HS={};
+
+function fm(t){if(!t||!t.toDate)return "";var d=t.toDate(),n=new Date(),tm=d.toLocaleTimeString("tr",{hour:"2-digit",minute:"2-digit"});return d.toDateString()==n.toDateString()?tm:d.toLocaleDateString("tr",{day:"2-digit",month:"2-digit"})+" "+tm}
+function subMsgs(){un("ms");uns.ms=F.collection("groups/"+g+"/channels/"+ch.id+"/messages").orderBy("t","desc").limit(MLIM).onSnapshot(function(s){MS=s.docs.map(function(d){var v=d.data();v.id=d.id;return v}).reverse();HM=s.size>=MLIM;drawMsgs()})}
+function moreM(){var el=$("msgs");KEEP=el.scrollHeight-el.scrollTop;MLIM+=80;subMsgs()}
+function pickCh(c){un("ms");un("pe");vLeave();ch=c;MS=[];PL=[];MLIM=80;
+ if(c&&c.type=="text")subMsgs();
+ if(c&&c.type=="voice")uns.pe=F.collection("groups/"+g+"/channels/"+c.id+"/peers").onSnapshot(function(s){PL=s.docs.map(function(d){var v=d.data();v.id=d.id;return v});drawVoice()});
+ draw()}
+function drawMsgs(){var el=$("msgs");if(!A||!ch||ch.type!="text")return;var keep=KEEP;KEEP=0;el.textContent="";
+ if(HM){var mb=E("button","btn more","Eski mesajları yükle");mb.style.alignSelf="center";mb.onclick=moreM;el.appendChild(mb)}
+ if(!MS.length)el.appendChild(E("p","empty","Bu kanalda henüz mesaj yok. İlk mesajı sen yaz."));
+ MS.forEach(function(m){var box=E("div","m"),av=E("div","av2",(m.n||"?").charAt(0).toUpperCase()),r=E("div"),hd=E("div");av.style.background=hc(m.u);
+  if(PH[m.u]){av.style.background="url("+PH[m.u]+") center/cover";av.textContent=""}else if(PH[m.u]===undefined)getPh(m.u);
+  hd.appendChild(E("b","",m.n||"Üye"));hd.appendChild(E("time","",fm(m.t)));
+  r.appendChild(hd);r.appendChild(E("p","",m.x));box.appendChild(av);box.appendChild(r);el.appendChild(box)});
+ el.scrollTop=keep?el.scrollHeight-keep:el.scrollHeight}
+
+async function forgot(){var e=$("le").value.trim();if(!e){toast("Önce e-posta adresini yaz");return}
+ try{await AU.sendPasswordResetEmail(e);toast("Sıfırlama bağlantısı gönderildi. Spam klasörüne de bak")}
+ catch(x){toast(x.code=="auth/invalid-email"?"E-posta geçersiz":"Gönderilemedi, tekrar dene")}}
+function acc(){var d=$("acc");if(!d)return;d.textContent="";
+ if(!AU){d.appendChild(E("p","empty","Hesap sistemi yükleniyor..."));return}
+ if(A){var av=E("div","pav");if(PH[A.uid])av.style.background="url("+PH[A.uid]+") center/cover";else av.textContent=(A.displayName||"?").charAt(0).toUpperCase();d.appendChild(av);
+  var fi=E("input");fi.type="file";fi.accept="image/*";fi.hidden=true;fi.onchange=function(){pickPh(fi.files[0])};d.appendChild(fi);
+  var b1=E("button","btn more","Fotoğraf seç");b1.onclick=function(){fi.click()};d.appendChild(b1);
+  if(PH[A.uid]){var b2=E("button","btn more","Fotoğrafı kaldır");b2.onclick=function(){savePh("")};d.appendChild(b2)}
+  d.appendChild(E("p","",(A.displayName||"Üye")+" · "+(A.email||"")));var o=E("button","btn more","Hesaptan çıkış yap");o.onclick=function(){AU.signOut()};d.appendChild(o);return}
+ var f=E("div","lf");
+ f.innerHTML='<input id="ln" class="in" maxlength="20" placeholder="Kullanıcı adı (kayıt için)"><input id="le" class="in" type="email" placeholder="E-posta"><input id="lp" class="in" type="password" placeholder="Şifre (en az 6)"><button class="btn play" id="l1">Giriş yap</button><button class="btn more" id="l2">Kayıt ol</button><button class="btn more" id="l3">Google ile gir</button><button class="btn more" id="l4">Şifremi unuttum</button>';
+ d.appendChild(f);[0,1,2].forEach(function(k){$("l"+(k+1)).onclick=function(){auth(k)}});$("l4").onclick=forgot}
+
+async function getMic(){var c={audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}};
+ if(MIC)c.audio.deviceId={exact:MIC};
+ try{return await navigator.mediaDevices.getUserMedia(c)}
+ catch(e){if(MIC){MIC="";return await navigator.mediaDevices.getUserMedia({audio:true})}throw e}}
+async function listMics(){try{var d=await navigator.mediaDevices.enumerateDevices();MD=d.filter(function(x){return x.kind=="audioinput"});drawVoice()}catch(e){}}
+function stopMeter(){if(LV){clearInterval(LV.iv);try{LV.ctx.close()}catch(e){}LV=null}}
+function startMeter(){stopMeter();if(!V)return;
+ try{var AC=window.AudioContext||window.webkitAudioContext,ctx=new AC();if(ctx.resume)ctx.resume();
+  var src=ctx.createMediaStreamSource(V.s),an=ctx.createAnalyser();an.fftSize=256;src.connect(an);var buf=new Uint8Array(an.fftSize);
+  LV={ctx:ctx,iv:setInterval(function(){an.getByteTimeDomainData(buf);var m=0;for(var i=0;i<buf.length;i++){var v=Math.abs(buf[i]-128);if(v>m)m=v}var b=$("lvb");if(b)b.style.width=Math.min(100,m/128*300)+"%"},80)}}catch(e){}}
+async function switchMic(id){MIC=id;
+ try{var n=await getMic(),t=n.getAudioTracks()[0],old=V.s.getAudioTracks()[0];t.enabled=old?old.enabled:true;
+  Object.keys(PC).forEach(function(k){PC[k].getSenders().forEach(function(s){if(s.track&&s.track.kind=="audio")s.replaceTrack(t)})});
+  if(old){V.s.removeTrack(old);old.stop()}V.s.addTrack(t);startMeter();drawVoice();toast("Mikrofon değişti")}
+ catch(e){toast("Mikrofon değiştirilemedi")}}
+function drawVoice(){var m=$("msgs");if(!A||!ch||ch.type!="voice")return;m.textContent="";var d=E("div","lf");
+ d.appendChild(E("p","empty",PL.length?"Odadakiler: "+PL.map(function(x){return x.n}).join(", "):"Odada kimse yok."));
+ var j=E("button","btn play",V?"Ayrıl":"Katıl");j.onclick=function(){V?vLeave():vJoin()};d.appendChild(j);
+ if(V){var mu=E("button","btn more","Sustur / Aç");mu.onclick=function(){var t=V.s.getAudioTracks()[0];t.enabled=!t.enabled;toast(t.enabled?"Mikrofon açık":"Mikrofon kapalı")};d.appendChild(mu);
+  var t0=V.s.getAudioTracks()[0],cid=t0&&t0.getSettings?t0.getSettings().deviceId:"";
+  if(MD.length){d.appendChild(E("p","empty","Mikrofon seç:"));var sl=E("select","in");
+   MD.forEach(function(x,i){var o=E("option","",x.label||("Mikrofon "+(i+1)));o.value=x.deviceId;if(x.deviceId==cid)o.selected=true;sl.appendChild(o)});
+   sl.onchange=function(){switchMic(sl.value)};d.appendChild(sl)}
+  d.appendChild(E("p","empty","Konuşunca çubuk dolmalı. Dolmuyorsa başka mikrofon seç."));
+  var bw=E("div","bar"),bi=E("i");bi.id="lvb";bi.style.transition="width .08s";bw.appendChild(bi);d.appendChild(bw)}
+ m.appendChild(d)}
+function snd(to,k,d){V.sg.add({from:A.uid,to:to,k:k,h:HS[to],d:JSON.parse(JSON.stringify(d)),t:T()})}
+function dropPc(id){if(PC[id]){PC[id].close();delete PC[id]}delete PQ[id];var a=$("a_"+id);if(a)a.remove()}
+function pc(id){if(PC[id])return PC[id];
+ var c=new RTCPeerConnection({iceServers:[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302"]}]});
+ V.s.getTracks().forEach(function(t){c.addTrack(t,V.s)});
+ c.onicecandidate=function(e){if(e.candidate&&V)snd(id,"c",e.candidate.toJSON())};
+ c.ontrack=function(e){var a=$("a_"+id);if(!a){a=E("audio");a.id="a_"+id;a.autoplay=true;document.body.appendChild(a)}
+  a.srcObject=e.streams[0]||new MediaStream([e.track]);var p=a.play();if(p&&p.catch)p.catch(function(){toast("Ses engellendi, sayfaya bir kez tıkla")})};
+ c.onconnectionstatechange=function(){if(c.connectionState=="failed")toast("Bağlantı kurulamadı, ağ engelliyor olabilir")};
+ return PC[id]=c}
+async function call(id){dropPc(id);HS[id]=Date.now();var c=pc(id),o=await c.createOffer();await c.setLocalDescription(o);snd(id,"o",{type:o.type,sdp:o.sdp})}
+async function sig(d){if(!V)return;var id=d.from,h=d.h||0;
+ if(HS[id]!==undefined&&h<HS[id])return;
+ if(HS[id]===undefined||h>HS[id]){dropPc(id);HS[id]=h}
+ var c=pc(id);
+ try{if(d.k=="o"){await c.setRemoteDescription(d.d);await flush(id);var a=await c.createAnswer();await c.setLocalDescription(a);snd(id,"a",{type:a.type,sdp:a.sdp})}
+  else if(d.k=="a"){await c.setRemoteDescription(d.d);await flush(id)}
+  else if(c.remoteDescription)await c.addIceCandidate(d.d);else(PQ[id]=PQ[id]||[]).push(d.d)}catch(e){}}
+async function vJoin(){var st;
+ try{st=await getMic()}catch(e){toast(e&&e.name=="NotFoundError"?"Mikrofon bulunamadı":"Mikrofon izni gerekli (adres çubuğundaki kilide bak)");return}
+ var base="groups/"+g+"/channels/"+ch.id,pr=F.collection(base+"/peers");V={s:st,sg:F.collection(base+"/sig"),me:pr.doc(A.uid)};HS={};
+ try{var old=await V.sg.where("to","==",A.uid).get();await Promise.all(old.docs.map(function(d){return d.ref.delete()}))}catch(e){}
+ if(!V)return;
+ try{await V.me.set({n:nm()})}catch(e){toast("Odaya girilemedi");vLeave();return}
+ if(!V)return;
+ uns.sg=V.sg.where("to","==",A.uid).onSnapshot(function(s){s.docChanges().forEach(function(c){if(c.type=="added"){var d=c.doc.data();c.doc.ref.delete();sig(d)}})});
+ var ps=await pr.get();if(!V)return;ps.forEach(function(p){if(p.id!=A.uid)call(p.id)});
+ startMeter();listMics();drawVoice()}
+function vLeave(){if(!V)return;var v=V;V=null;stopMeter();v.s.getTracks().forEach(function(t){t.stop()});
+ Object.keys(PC).forEach(function(k){PC[k].close();var a=$("a_"+k);if(a)a.remove()});PC={};PQ={};HS={};un("sg");v.me.delete().catch(function(){});drawVoice()}
 </script>
 </body>
 </html>
