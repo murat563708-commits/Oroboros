@@ -487,15 +487,18 @@ VID[C.length-1]=encodeURI("Avengers Doomsday Dublajlı Yeni Resmi Fragman 18 Ara
   $("mp").onclick=function(){$("dlg").close();if(playV(cur))watch(cur)};
   $("hp").onclick=function(){var k=C.length-1;if(playV(k))watch(k)};
 })();
- /* ===== YAMA v6: ön sayfa video ===== */
+ /* ===== YAMA v6 (yeni): ön sayfa video ===== */
 (function(){
   var h=document.querySelector(".hero"),v=document.createElement("video");
-  v.src=encodeURI("Avengers Doomsday Dublajlı Yeni Resmi Fragman 18 Aralıkta Sadece Sinemalarda!.mp4");
+  v.src="doom.mp4";
   v.autoplay=true;v.muted=true;v.loop=true;v.playsInline=true;
-  v.setAttribute("playsinline","");
-  v.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45;z-index:-1";
+  v.setAttribute("playsinline","");v.setAttribute("muted","");
+  v.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;z-index:-1";
+  v.onerror=function(){toast("Video acilamadi, kod: "+(v.error&&v.error.code))};
+  v.onplaying=function(){toast("Video oynuyor")};
   h.style.isolation="isolate";
   h.insertBefore(v,h.firstChild);
+  var p=v.play();if(p&&p.catch)p.catch(function(){});
 })();
 </script>
 </body>
