@@ -455,7 +455,18 @@ async function vJoin(){var st;
 function vLeave(){if(!V)return;var v=V;V=null;stopMeter();v.s.getTracks().forEach(function(t){t.stop()});
  Object.keys(PC).forEach(function(k){PC[k].close();var a=$("a_"+k);if(a)a.remove()});PC={};PQ={};HS={};un("sg");v.me.delete().catch(function(){});drawVoice()}
  var acc0=acc;
-acc=function(){acc0();var d=$("acc");if(d&&A){var r=E("button","btn more","Şifre sıfırlama maili gönder");r.onclick=async function(){try{await AU.sendPasswordResetEmail(A.email);toast("Sıfırlama bağlantısı e-postana gönderildi")}catch(e){toast("Gönderilemedi, tekrar dene")}};d.appendChild(r)}};
+acc=function(){acc0();var d=$("acc");if(d&&A){var r=E("button","btn more","Şifre sıfırlama maili gönder");r.onclick=async function(){try{await AU.sendPasswordResetEmail(A.email);toast("Sıfırlama bağlantısı e-postana gönderildi")}catch(e){toast("Gönderilemedi, tekrar dene")}};d.appendChild(r)}};/* ===== YAMA v3: puan + şifre sıfırlama maili kaldır ===== */
+acc=acc0; /* profildeki "Şifre sıfırlama maili gönder" butonu gider */
+(function(){
+  var m=document.querySelector("#pb .mini");if(m)m.remove();
+  ["pl","pbar"].forEach(function(i){var e=$(i);if(e)e.parentNode.remove()});
+  ["ps","pr"].forEach(function(i){var e=$(i);if(e)e.remove()});
+  document.querySelectorAll("#pd .mb p").forEach(function(p){if(p.textContent.indexOf("Kazanç")==0)p.remove()});
+  showPr=function(){};
+  openP=function(){acc();$("pd").showModal()};
+  $("pb").onclick=openP;
+  watch=function(i){var c=C[i];if(pr.w.indexOf(i)>=0){toast("Bunu zaten izledin");return}pr.w.push(i);savePr();render();toast("İzlendi · "+c[0])};
+})();
 </script>
 </body>
 </html>
