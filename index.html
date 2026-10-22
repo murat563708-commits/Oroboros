@@ -467,6 +467,26 @@ acc=acc0; /* profildeki "Şifre sıfırlama maili gönder" butonu gider */
   $("pb").onclick=openP;
   watch=function(i){var c=C[i];if(pr.w.indexOf(i)>=0){toast("Bunu zaten izledin");return}pr.w.push(i);savePr();render();toast("İzlendi · "+c[0])};
 })();
+ /* ===== YAMA v4+v5: video + Doctor Doom ===== */
+C.push(["Doctor Doom","Film","Yakında","Aksiyon","Marvel evreninin en tehlikeli kötü karakterlerinden biri.","#0e3a1a,#5ab06a"]);
+chips();render();
+var VID={};
+VID[C.length-1]=encodeURI("Avengers Doomsday Dublajlı Yeni Resmi Fragman 18 Aralıkta Sadece Sinemalarda!.mp4");
+(function(){
+  var vd=document.createElement("dialog");vd.id="vd";vd.style.maxWidth="min(900px,96vw)";
+  vd.innerHTML='<div id="vbox" style="aspect-ratio:16/9;background:#000"></div><div class="mb"><button class="btn more" id="vc">Kapat</button></div>';
+  document.body.appendChild(vd);
+  window.playV=function(i){
+    var u=VID[i];if(!u){toast("Bu yapım için video eklenmedi");return false}
+    $("vbox").innerHTML=u.indexOf("youtube")>=0
+      ?'<iframe src="'+u+'?autoplay=1" style="width:100%;height:100%;border:0" allow="autoplay; fullscreen" allowfullscreen></iframe>'
+      :'<video src="'+u+'" style="width:100%;height:100%" controls autoplay playsinline></video>';
+    vd.showModal();return true};
+  $("vc").onclick=function(){vd.close()};
+  vd.addEventListener("close",function(){$("vbox").innerHTML=""});
+  $("mp").onclick=function(){$("dlg").close();if(playV(cur))watch(cur)};
+  $("hp").onclick=function(){var k=C.length-1;if(playV(k))watch(k)};
+})();
 </script>
 </body>
 </html>
