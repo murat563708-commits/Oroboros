@@ -488,6 +488,31 @@ VID[C.length-1]=encodeURI("Avengers Doomsday Dublajlı Yeni Resmi Fragman 18 Ara
   $("hp").onclick=function(){var k=C.length-1;if(playV(k))watch(k)};
  VID[C.length-1]="doom.mp4";
 })();
+ /* ===== YAMA v8: Doctor Doom + ön sayfada video ===== */
+(function(){
+try{
+  C.push(["Doctor Doom","Film","Yakında","Aksiyon","Marvel evreninin en tehlikeli kötü karakterlerinden biri.","#0e3a1a,#5ab06a"]);
+  chips();render();
+  var SRC="doom.mp4";
+  var css=".hero{flex-direction:row!important;align-items:center!important;justify-content:space-between!important;flex-wrap:wrap;gap:28px!important}"+
+   ".hero .hl{display:flex;flex-direction:column;gap:16px;align-items:flex-start;flex:1 1 320px}"+
+   ".hero .vp{flex:1 1 420px;max-width:760px;aspect-ratio:16/9;background:#000;box-shadow:0 0 0 1px var(--line),0 20px 60px rgba(0,0,0,.5)}"+
+   ".hero .vp video{width:100%;height:100%;display:block}";
+  var st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
+  var h=document.querySelector(".hero"),hl=document.createElement("div");
+  hl.className="hl";
+  while(h.firstChild)hl.appendChild(h.firstChild);
+  h.appendChild(hl);
+  var vp=document.createElement("div");vp.className="vp";
+  var v=document.createElement("video");
+  v.src=encodeURI(SRC);v.controls=true;v.playsInline=true;v.muted=true;v.loop=true;v.autoplay=true;
+  v.onerror=function(){toast("Video acilamadi, kod: "+(v.error?v.error.code:"?"))};
+  vp.appendChild(v);h.appendChild(vp);
+  function go(){vp.scrollIntoView({behavior:"smooth",block:"center"});v.muted=false;v.play()}
+  $("hp").onclick=go;
+  $("mp").onclick=function(){$("dlg").close();if(cur==C.length-1)go();else watch(cur)};
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
