@@ -467,50 +467,36 @@ acc=acc0; /* profildeki "Şifre sıfırlama maili gönder" butonu gider */
   $("pb").onclick=openP;
   watch=function(i){var c=C[i];if(pr.w.indexOf(i)>=0){toast("Bunu zaten izledin");return}pr.w.push(i);savePr();render();toast("İzlendi · "+c[0])};
 })();
- /* ===== YAMA v4+v5: video + Doctor Doom ===== */
-C.push(["Doctor Doom","Film","Yakında","Aksiyon","Marvel evreninin en tehlikeli kötü karakterlerinden biri.","#0e3a1a,#5ab06a"]);
-chips();render();
-var VID={};
-VID[C.length-1]=encodeURI("Avengers Doomsday Dublajlı Yeni Resmi Fragman 18 Aralıkta Sadece Sinemalarda!.mp4");
-(function(){
-  var vd=document.createElement("dialog");vd.id="vd";vd.style.maxWidth="min(900px,96vw)";
-  vd.innerHTML='<div id="vbox" style="aspect-ratio:16/9;background:#000"></div><div class="mb"><button class="btn more" id="vc">Kapat</button></div>';
-  document.body.appendChild(vd);
-  window.playV=function(i){
-    var u=VID[i];if(!u){toast("Bu yapım için video eklenmedi");return false}
-    $("vbox").innerHTML=u.indexOf("youtube")>=0
-      ?'<iframe src="'+u+'?autoplay=1" style="width:100%;height:100%;border:0" allow="autoplay; fullscreen" allowfullscreen></iframe>'
-      :'<video src="'+u+'" style="width:100%;height:100%" controls autoplay playsinline></video>';
-    vd.showModal();return true};
-  $("vc").onclick=function(){vd.close()};
-  vd.addEventListener("close",function(){$("vbox").innerHTML=""});
-  $("mp").onclick=function(){$("dlg").close();if(playV(cur))watch(cur)};
-  $("hp").onclick=function(){var k=C.length-1;if(playV(k))watch(k)};
- VID[C.length-1]="doom.mp4";
-})();
- /* ===== YAMA v8: Doctor Doom + ön sayfada video ===== */
+ /* ===== YAMA v9: tam sayfa video + tıklayınca büyüt ===== */
 (function(){
 try{
   C.push(["Doctor Doom","Film","Yakında","Aksiyon","Marvel evreninin en tehlikeli kötü karakterlerinden biri.","#0e3a1a,#5ab06a"]);
   chips();render();
-  var SRC="doom.mp4";
-  var css=".hero{flex-direction:row!important;align-items:center!important;justify-content:space-between!important;flex-wrap:wrap;gap:28px!important}"+
-   ".hero .hl{display:flex;flex-direction:column;gap:16px;align-items:flex-start;flex:1 1 320px}"+
-   ".hero .vp{flex:1 1 420px;max-width:760px;aspect-ratio:16/9;background:#000;box-shadow:0 0 0 1px var(--line),0 20px 60px rgba(0,0,0,.5)}"+
-   ".hero .vp video{width:100%;height:100%;display:block}";
+  var SRCS=["doom.mp4","Avengers Doomsday Dublajlı Yeni Resmi Fragman 18 Aralıkta Sadece Sinemalarda!.mp4"],si=0;
+  var css=".hero{position:relative;overflow:hidden;isolation:isolate;cursor:pointer}"+
+   ".hero .vp{position:absolute;inset:0;z-index:-1;background:#000}"+
+   ".hero .vp video{width:100%;height:100%;object-fit:cover;opacity:.6;display:block}"+
+   ".hero .vp::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(19,7,12,.88),rgba(19,7,12,.25) 65%,transparent);pointer-events:none}"+
+   ".hero .xb{display:none;position:absolute;top:18px;right:18px;z-index:3;cursor:pointer}"+
+   ".hero.zm{position:fixed!important;inset:0;z-index:45;margin:0!important;padding:0!important;min-height:0!important;clip-path:none!important;background:#000;cursor:default}"+
+   ".hero.zm>*:not(.vp):not(.xb){display:none!important}"+
+   ".hero.zm .vp{z-index:0}.hero.zm .vp video{object-fit:contain;opacity:1}.hero.zm .vp::after{display:none}.hero.zm .xb{display:block}";
   var st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
-  var h=document.querySelector(".hero"),hl=document.createElement("div");
-  hl.className="hl";
-  while(h.firstChild)hl.appendChild(h.firstChild);
-  h.appendChild(hl);
-  var vp=document.createElement("div");vp.className="vp";
-  var v=document.createElement("video");
-  v.src=encodeURI(SRC);v.controls=true;v.playsInline=true;v.muted=true;v.loop=true;v.autoplay=true;
-  v.onerror=function(){toast("Video acilamadi, kod: "+(v.error?v.error.code:"?"))};
-  vp.appendChild(v);h.appendChild(vp);
-  function go(){vp.scrollIntoView({behavior:"smooth",block:"center"});v.muted=false;v.play()}
-  $("hp").onclick=go;
-  $("mp").onclick=function(){$("dlg").close();if(cur==C.length-1)go();else watch(cur)};
+  var h=document.querySelector(".hero"),vp=document.createElement("div"),v=document.createElement("video"),xb=document.createElement("button");
+  vp.className="vp";xb.className="btn more xb";xb.textContent="✕ Kapat";
+  v.muted=true;v.loop=true;v.autoplay=true;v.playsInline=true;
+  v.setAttribute("playsinline","");v.setAttribute("muted","");
+  function pl(){var p=v.play();if(p&&p.catch)p.catch(function(){})}
+  v.src=encodeURI(SRCS[0]);
+  v.onerror=function(){si++;if(si<SRCS.length){v.src=encodeURI(SRCS[si]);v.load();pl()}else toast("Video acilamadi, kod: "+(v.error?v.error.code:"?"))};
+  vp.appendChild(v);h.insertBefore(vp,h.firstChild);h.appendChild(xb);
+  function zoom(){if(h.classList.contains("zm"))return;h.classList.add("zm");document.body.style.overflow="hidden";v.controls=true;v.muted=false;v.loop=false;pl()}
+  function unzoom(){if(!h.classList.contains("zm"))return;h.classList.remove("zm");document.body.style.overflow="";v.controls=false;v.muted=true;v.loop=true;pl()}
+  h.addEventListener("click",function(e){if(e.target.closest("#hm")||h.classList.contains("zm"))return;zoom()});
+  xb.onclick=function(e){e.stopPropagation();unzoom()};
+  document.addEventListener("keydown",function(e){if(e.key=="Escape")unzoom()});
+  $("hp").onclick=function(e){e.stopPropagation();zoom()};
+  $("mp").onclick=function(){$("dlg").close();if(cur==C.length-1)zoom();else watch(cur)};
 }catch(e){console.error(e)}
 })();
 </script>
