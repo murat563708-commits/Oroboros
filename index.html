@@ -499,6 +499,15 @@ try{
   $("mp").onclick=function(){$("dlg").close();if(cur==C.length-1)zoom();else watch(cur)};
 }catch(e){console.error(e)}
 })();
+ /* GEÇİCİ TEST: dosya sitede var mı */
+(function(){
+  var ad=["doom.mp4","Avengers Doomsday Dublajlı Yeni Resmi Fragman 18 Aralıkta Sadece Sinemalarda!.mp4"];
+  Promise.all(ad.map(function(a){
+    return fetch(encodeURI(a),{method:"HEAD",cache:"no-store"}).then(function(r){
+      return a.slice(0,12)+" -> "+r.status+" "+(r.headers.get("content-type")||"")+" "+Math.round((r.headers.get("content-length")||0)/1024)+" KB";
+    }).catch(function(){return a.slice(0,12)+" -> hata"});
+  })).then(function(s){alert(s.join("\n"))});
+})();
 </script>
 </body>
 </html>
