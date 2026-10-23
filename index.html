@@ -467,12 +467,12 @@ acc=acc0; /* profildeki "Şifre sıfırlama maili gönder" butonu gider */
   $("pb").onclick=openP;
   watch=function(i){var c=C[i];if(pr.w.indexOf(i)>=0){toast("Bunu zaten izledin");return}pr.w.push(i);savePr();render();toast("İzlendi · "+c[0])};
 })();
- /* ===== YAMA v9: tam sayfa video + tıklayınca büyüt ===== */
+ /* ===== YAMA v10: tam sayfa video (temiz) ===== */
 (function(){
 try{
   C.push(["Doctor Doom","Film","Yakında","Aksiyon","Marvel evreninin en tehlikeli kötü karakterlerinden biri.","#0e3a1a,#5ab06a"]);
   chips();render();
-  [var SRCS=["doom.mp4.mp4"],si=0;"Avengers Doomsday Dublajlı Yeni Resmi Fragman 18 Aralıkta Sadece Sinemalarda!.mp4"],si=0;
+  var SRCS=["doom.mp4.mp4"];
   var css=".hero{position:relative;overflow:hidden;isolation:isolate;cursor:pointer}"+
    ".hero .vp{position:absolute;inset:0;z-index:-1;background:#000}"+
    ".hero .vp video{width:100%;height:100%;object-fit:cover;opacity:.6;display:block}"+
@@ -488,7 +488,7 @@ try{
   v.setAttribute("playsinline","");v.setAttribute("muted","");
   function pl(){var p=v.play();if(p&&p.catch)p.catch(function(){})}
   v.src=encodeURI(SRCS[0]);
-  v.onerror=function(){si++;if(si<SRCS.length){v.src=encodeURI(SRCS[si]);v.load();pl()}else toast("Video acilamadi, kod: "+(v.error?v.error.code:"?"))};
+  v.onerror=function(){toast("Video acilamadi, kod: "+(v.error?v.error.code:"?"))};
   vp.appendChild(v);h.insertBefore(vp,h.firstChild);h.appendChild(xb);
   function zoom(){if(h.classList.contains("zm"))return;h.classList.add("zm");document.body.style.overflow="hidden";v.controls=true;v.muted=false;v.loop=false;pl()}
   function unzoom(){if(!h.classList.contains("zm"))return;h.classList.remove("zm");document.body.style.overflow="";v.controls=false;v.muted=true;v.loop=true;pl()}
