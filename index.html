@@ -638,6 +638,37 @@ try{
   });
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v15: yakinlastirma kilidi ===== */
+(function(){
+try{
+  var mv=document.querySelector('meta[name=viewport]');
+  if(!mv){mv=document.createElement("meta");mv.name="viewport";document.head.appendChild(mv)}
+  mv.content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover";
+
+  var st=document.createElement("style");
+  st.textContent=
+   "html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}"+
+   /* iPhone'da yazi kutusuna basinca otomatik zoom yapmasin */
+   "input,textarea,select{font-size:16px!important}";
+  document.head.appendChild(st);
+
+  /* iOS: parmakla buyutme jestlerini engelle */
+  ["gesturestart","gesturechange","gestureend"].forEach(function(ev){
+    document.addEventListener(ev,function(e){e.preventDefault()},{passive:false});
+  });
+  document.addEventListener("touchmove",function(e){
+    if(e.touches&&e.touches.length>1)e.preventDefault();
+  },{passive:false});
+
+  /* cift dokunma zoom'unu engelle */
+  var last=0;
+  document.addEventListener("touchend",function(e){
+    var n=Date.now();
+    if(n-last<300)e.preventDefault();
+    last=n;
+  },{passive:false});
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
