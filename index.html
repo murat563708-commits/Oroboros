@@ -669,6 +669,45 @@ try{
   },{passive:false});
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v16: telefonda ses kontrolu gizli + yatayda tam ekran ===== */
+(function(){
+try{
+  var touch=window.matchMedia&&matchMedia("(pointer:coarse)").matches;
+
+  var st=document.createElement("style");
+  st.textContent=
+   /* dokunmatik cihazda ses kutusu hic gorunmesin */
+   "@media(pointer:coarse){.hero .sb.sb.sb.sb{display:none!important}}"+
+   /* telefon yatayken video tum ekrani kaplasin */
+   "@media(orientation:landscape) and (max-height:500px){"+
+    "html,body{overflow:hidden!important}"+
+    ".hero{position:fixed!important;inset:0!important;z-index:45!important;width:100vw!important;height:100vh!important;height:100dvh!important;min-height:0!important;margin:0!important;padding:0!important;border-radius:0!important;clip-path:none!important;-webkit-clip-path:none!important}"+
+    ".hero>*:not(.vp){display:none!important}"+
+    ".hero .vp iframe{opacity:1!important}"+
+    ".hero .vp::after{display:none!important}"+
+   "}";
+  document.head.appendChild(st);
+
+  /* ilk dokunusta sesi ac, seviyeyi telefonun ses tuslari belirler */
+  if(touch){
+    var done=false;
+    function go(){
+      if(done)return;
+      var f=document.querySelector(".hero .vp iframe");
+      if(!f||!f.contentWindow)return;
+      done=true;
+      function cmd(fn,args){
+        try{f.contentWindow.postMessage(JSON.stringify({event:"command",func:fn,args:args||[]}),"*")}catch(e){}
+      }
+      cmd("unMute");
+      cmd("setVolume",[100]);
+      cmd("playVideo");
+      ["touchend","pointerup","click"].forEach(function(ev){document.removeEventListener(ev,go,true)});
+    }
+    ["touchend","pointerup","click"].forEach(function(ev){document.addEventListener(ev,go,true)});
+  }
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
