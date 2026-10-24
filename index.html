@@ -763,6 +763,74 @@ try{
   },true);
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v20: Netflix tarzi bolumler ===== */
+(function(){
+try{
+  var hero=document.querySelector(".hero");
+  if(!hero)return;
+  var L=(typeof C!=="undefined"&&C&&C.length)?C:[];
+  function esc(s){return String(s).replace(/[&<>"]/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]})}
+
+  var st=document.createElement("style");
+  st.textContent=
+   ".nx{max-width:1200px;margin:40px auto;padding:0 18px;box-sizing:border-box}"+
+   ".nx h3{font-size:22px;margin:0 0 14px}"+
+   ".nxr{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 10px 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}"+
+   ".nxr::-webkit-scrollbar{display:none}"+
+   ".nxc{position:relative;flex:0 0 auto;width:170px;height:240px;margin-left:56px;scroll-snap-align:start}"+
+   ".nxn{position:absolute;left:-52px;bottom:-6px;font-size:120px;font-weight:900;line-height:1;color:#000;-webkit-text-stroke:3px #8a7f70;z-index:0}"+
+   ".nxp{position:relative;z-index:1;width:100%;height:100%;border-radius:6px;background:linear-gradient(160deg,#3a1a28,#12060c);background-size:cover;background-position:center;display:flex;align-items:flex-end;overflow:hidden;border:1px solid rgba(255,255,255,.08)}"+
+   ".nxp span{display:block;width:100%;padding:28px 10px 10px;font-weight:700;font-size:15px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.85))}"+
+   ".nxg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}"+
+   ".nxk{padding:20px;border-radius:8px;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1)}"+
+   ".nxk b{font-size:18px}.nxk p{margin:10px 0 0;opacity:.75;font-size:14px;line-height:1.5}"+
+   ".nxq{margin-bottom:8px;border-radius:6px;background:rgba(255,255,255,.06)}"+
+   ".nxq summary{list-style:none;cursor:pointer;padding:18px 20px;font-size:17px;display:flex;justify-content:space-between;align-items:center}"+
+   ".nxq summary::-webkit-details-marker{display:none}"+
+   ".nxq summary::after{content:'+';font-size:26px;line-height:1}"+
+   ".nxq[open] summary::after{content:'\\00d7'}"+
+   ".nxq p{margin:0;padding:0 20px 18px;opacity:.8;line-height:1.55}"+
+   "@media(max-width:700px){.nxc{width:130px;height:185px;margin-left:44px}.nxn{font-size:90px;left:-40px}.nx{margin:28px auto}}";
+  document.head.appendChild(st);
+
+  /* 1) Gundemdekiler: sitedeki ilk 10 icerik, poster linki varsa kapak olur */
+  var top=L.slice(0,10).map(function(c,i){
+    var img="";
+    for(var k=0;k<c.length;k++){
+      if(typeof c[k]==="string"&&/^https?:\/\/|\.(jpe?g|png|webp)(\?|$)/i.test(c[k])){img=c[k];break}
+    }
+    return '<div class="nxc"><div class="nxn">'+(i+1)+'</div><div class="nxp"'+(img?' style="background-image:url(\''+esc(img)+'\')"':'')+'><span>'+esc(c[0])+'</span></div></div>';
+  }).join("");
+  if(top){
+    var s1=document.createElement("section");
+    s1.className="nx";
+    s1.innerHTML='<h3>Gündemdekiler</h3><div class="nxr">'+top+'</div>';
+    hero.insertAdjacentElement("afterend",s1);
+  }
+
+  /* 2) Neler var kartlari (yazilari istedigin gibi degistir) */
+  var s2=document.createElement("section");
+  s2.className="nx";
+  s2.innerHTML='<h3>Oroboros\'ta neler var?</h3><div class="nxg">'+
+   [["Her cihazda izle","Telefonda, tablette ve bilgisayarda tarayıcıdan aç, hemen izle."],
+    ["Listeni oluştur","Beğendiklerini Listem'e ekle, sonra kaldığın yerden devam et."],
+    ["Birlikte izle","Arkadaşlarınla sohbet et, özel gruplar kur."],
+    ["Dizi, film, anime","Hepsi tek yerde, türe göre filtrele."]
+   ].map(function(a){return '<div class="nxk"><b>'+a[0]+'</b><p>'+a[1]+'</p></div>'}).join("")+'</div>';
+
+  /* 3) SSS (yazilari istedigin gibi degistir) */
+  var s3=document.createElement("section");
+  s3.className="nx";
+  s3.innerHTML='<h3>Sıkça sorulan sorular</h3>'+
+   [["Oroboros nedir?","Dizi, film ve anime tek yerde."],
+    ["Nerede izleyebilirim?","Tarayıcısı olan her cihazda: telefon, tablet, bilgisayar."],
+    ["Nasıl üye olurum?","Sağ üstteki profil simgesinden giriş yapabilir ya da kaydolabilirsin."]
+   ].map(function(a){return '<details class="nxq"><summary>'+a[0]+'</summary><p>'+a[1]+'</p></details>'}).join("");
+
+  var ft=document.querySelector("footer");
+  [s2,s3].forEach(function(s){ft?ft.parentNode.insertBefore(s,ft):document.body.appendChild(s)});
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
