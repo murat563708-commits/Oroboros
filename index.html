@@ -925,6 +925,73 @@ try{
   document.head.appendChild(st);
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v24: video izle ile baslar, kapaninca durur + seffaf ses kontrolu ===== */
+(function(){
+try{
+  var VID="r2Im3h6u5kI",ZOOM=1.04;
+  var POSTER="https://img.youtube.com/vi/"+VID+"/maxresdefault.jpg";
+  var h=document.querySelector(".hero"),vp=h&&h.querySelector(".vp");
+  if(!h||!vp)return;
+
+  /* eski iframe, ses kutusu ve oynat/durdur butonlari kaldirilir */
+  Array.prototype.forEach.call(vp.querySelectorAll("iframe"),function(x){x.remove()});
+  Array.prototype.forEach.call(h.querySelectorAll(".sb,.pzb,.pzi"),function(x){x.remove()});
+
+  /* kapak fotosu */
+  var pst=vp.querySelector(".pst");
+  if(!pst){
+    pst=document.createElement("img");pst.className="pst";pst.alt="";pst.src=POSTER;
+    pst.onerror=function(){pst.onerror=null;pst.src="https://img.youtube.com/vi/"+VID+"/hqdefault.jpg"};
+    vp.insertBefore(pst,vp.firstChild);
+  }
+  var tg=document.createElement("div");tg.id="ytbg2";vp.appendChild(tg);
+
+  /* seffaf ses kontrolu */
+  var box=document.createElement("div");
+  box.className="sb2";
+  box.innerHTML='<button type="button" aria-label="Ses">🔊</button><input type="range" min="0" max="100" value="70" aria-label="Ses seviyesi">';
+  vp.appendChild(box);
+  var btn=box.querySelector("button"),rng=box.querySelector("input");
+  ["click","touchend","pointerup"].forEach(function(ev){box.addEventListener(ev,function(e){e.stopPropagation()})});
+
+  var player=null,ready=false,want=h.classList.contains("zm"),chk=0,f=null;
+
+  function fit(){
+    if(!f)return;
+    var W=h.clientWidth,H=h.clientHeight;
+    if(!W||!H)return;
+    var w=Math.max(W,H*2.4)*ZOOM;
+    f.style.width=w+"px";f.style.height=(w*9/16)+"px";
+  }
+  function sync(){
+    try{btn.textContent=(player.isMuted()||player.getVolume()===0)?"🔇":"🔊"}catch(e){}
+  }
+  function open(){
+    want=true;
+    if(!ready)return;
+    try{player.unMute();player.setVolume(+rng.value);player.playVideo()}catch(e){}
+    clearTimeout(chk);
+    /* ses ile baslamazsa (ozellikle iPhone) sessiz baslat, ses butonuyla acilir */
+    chk=setTimeout(function(){
+      try{
+        var s=player.getPlayerState();
+        if(want&&(s===-1||s===5||s===2)){player.mute();player.playVideo();sync()}
+      }catch(e){}
+    },1200);
+  }
+  function close(){
+    want=false;clearTimeout(chk);
+    try{player.pauseVideo()}catch(e){}
+    vp.classList.remove("vplay");
+  }
+
+  btn.onclick=function(){
+    if(!player)return;
+    try{
+      if(player.isMuted()||+rng.value===0){
+        if(+rng.value===0)rng.value=70;
+        player.unMute();player.setVolume(+rng.value);
+      }else player.mute();
 </script>
 </body>
 </html>
