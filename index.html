@@ -992,6 +992,39 @@ try{
   document.head.appendChild(st);
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v30: YouTube onceki/sonraki/durdur butonlarini kaldir ===== */
+(function(){
+try{
+  var h=document.querySelector(".hero"),f=h&&h.querySelector(".vp iframe");
+  if(!h||!f)return;
+
+  /* playlist/loop ayarini kaldir (onceki-sonraki butonlari bundan cikiyor) */
+  var u=f.src.replace(/&loop=1/,"").replace(/&playlist=[^&]*/,"");
+  if(u!==f.src)f.src=u;
+
+  function send(o){try{f.contentWindow.postMessage(JSON.stringify(o),"*")}catch(e){}}
+  function listen(){send({event:"listening",id:1,channel:"widget"})}
+  var got=false;
+  f.addEventListener("load",listen);
+  var li=setInterval(function(){if(got){clearInterval(li);return}listen()},500);
+
+  /* video bitince basa sar, devam et */
+  window.addEventListener("message",function(e){
+    if(e.source!==f.contentWindow)return;
+    var d=e.data;
+    try{d=typeof d==="string"?JSON.parse(d):d}catch(x){return}
+    if(!d)return;
+    got=true;
+    var s=null;
+    if(d.event==="onStateChange")s=d.info;
+    else if(d.event==="infoDelivery"&&d.info&&typeof d.info.playerState==="number")s=d.info.playerState;
+    if(s===0){
+      send({event:"command",func:"seekTo",args:[0,true],id:1,channel:"widget"});
+      send({event:"command",func:"playVideo",args:[],id:1,channel:"widget"});
+    }
+  });
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
