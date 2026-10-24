@@ -552,6 +552,48 @@ try{
   document.head.appendChild(st);
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v13: tam kapla + ceviri/youtube gizle + sabit logo ===== */
+(function(){
+try{
+  var ZOOM=1.04; /* yazi hala gorunuyorsa 1.10 yap */
+  var h=document.querySelector(".hero");
+  var vp=h&&h.querySelector(".vp");
+  var f=vp&&vp.querySelector("iframe");
+  if(!h||!vp||!f)return;
+
+  f.src=f.src+"&modestbranding=1&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0";
+
+  function fit(){
+    var W=h.clientWidth,H=h.clientHeight;
+    if(!W||!H)return;
+    var w=Math.max(W,H*2.4)*ZOOM;
+    f.style.width=w+"px";
+    f.style.height=(w*9/16)+"px";
+  }
+  fit();
+  window.addEventListener("resize",fit);
+  if(window.ResizeObserver)new ResizeObserver(fit).observe(h);
+
+  var lg=h.querySelector("img[class*=logo i],img[alt*=oroboros i],img[src*=logo i],svg[class*=logo i],[class*=logo] img,[class*=logo] svg,[class*=logo]")||h.querySelector("img,svg");
+  if(lg){
+    var w0=lg.getBoundingClientRect().width||130;
+    var c=lg.cloneNode(true);
+    c.removeAttribute("id");
+    c.className="lgz";
+    c.style.width=w0+"px";
+    c.style.height="auto";
+    h.appendChild(c);
+  }
+
+  var st=document.createElement("style");
+  st.textContent=
+   ".hero .vp{overflow:hidden}"+
+   ".hero .vp iframe{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:none;opacity:.6}"+
+   ".hero .lgz{display:none}"+
+   ".hero.zm>.lgz.lgz.lgz.lgz{display:block!important;position:fixed;left:24px;top:24px;z-index:46;pointer-events:none}";
+  document.head.appendChild(st);
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
