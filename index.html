@@ -1025,6 +1025,27 @@ try{
   });
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v33: giris penceresi sade: Google ile uyelik + sifremi unuttum ===== */
+(function(){
+try{
+  var st=document.createElement("style");
+  st.textContent=".oro-hide{display:none!important}";
+  document.head.appendChild(st);
+
+  function fix(){
+    document.querySelectorAll("input").forEach(function(i){
+      if(/kullan[ıi]c[ıi] ad[ıi]/i.test(i.placeholder||""))i.classList.add("oro-hide");
+    });
+    document.querySelectorAll("button").forEach(function(b){
+      var t=(b.textContent||"").trim();
+      if(/^kay[ıi]t ol$/i.test(t)&&!b.closest(".nl"))b.classList.add("oro-hide");
+      if(/^google ile gir$/i.test(t))b.textContent="Google ile üye ol / giriş yap";
+    });
+  }
+  fix();
+  new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
