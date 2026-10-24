@@ -516,6 +516,42 @@ try{
   document.head.appendChild(st);
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v12: ses kontrolu ===== */
+(function(){
+try{
+  var h=document.querySelector(".hero");
+  var f=document.querySelector(".hero .vp iframe");
+  if(!h||!f)return;
+  if(f.src.indexOf("enablejsapi")<0)f.src=f.src+"&enablejsapi=1";
+  function cmd(fn,args){
+    try{f.contentWindow.postMessage(JSON.stringify({event:"command",func:fn,args:args||[]}),"*")}catch(e){}
+  }
+  var box=document.createElement("div");
+  box.className="sb";
+  var b=document.createElement("button");
+  b.textContent="🔇";
+  var r=document.createElement("input");
+  r.type="range";r.min=0;r.max=100;r.value=60;
+  var muted=true;
+  b.onclick=function(e){
+    e.stopPropagation();
+    if(muted){cmd("unMute");cmd("setVolume",[+r.value]);b.textContent="🔊";muted=false}
+    else{cmd("mute");b.textContent="🔇";muted=true}
+  };
+  r.oninput=function(e){
+    e.stopPropagation();
+    if(muted){cmd("unMute");b.textContent="🔊";muted=false}
+    cmd("setVolume",[+r.value]);
+  };
+  r.onclick=function(e){e.stopPropagation()};
+  box.onclick=function(e){e.stopPropagation()};
+  box.appendChild(b);box.appendChild(r);
+  h.appendChild(box);
+  var st=document.createElement("style");
+  st.textContent=".hero .sb{position:absolute;right:18px;bottom:18px;z-index:5;display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.6);padding:6px 10px;border-radius:6px}.hero .sb button{background:none;border:0;color:#fff;font-size:18px;cursor:pointer}.hero .sb input{width:90px;cursor:pointer}.hero.zm>div.sb.sb{display:flex!important;z-index:50;position:fixed}";
+  document.head.appendChild(st);
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
