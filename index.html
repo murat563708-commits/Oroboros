@@ -981,6 +981,17 @@ try{
   document.head.appendChild(st);
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v29: hoparlor sag altta ===== */
+(function(){
+try{
+  var st=document.createElement("style");
+  st.textContent=
+   ".hero .spk.spk.spk{left:auto;right:18px;bottom:18px}"+
+   ".hero.zm>button.spk.spk.spk.spk.spk.spk{left:auto;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px))}"+
+   "@media(max-width:700px){.hero .spk.spk.spk{left:auto;right:12px;bottom:12px}}";
+  document.head.appendChild(st);
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
