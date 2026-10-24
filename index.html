@@ -708,6 +708,61 @@ try{
   }
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v18: dokununca durdur / devam et (YouTube API) ===== */
+(function(){
+try{
+  var h=document.querySelector(".hero");
+  var f=h&&h.querySelector(".vp iframe");
+  if(!h||!f)return;
+  f.id="ytbg";
+  if(f.src.indexOf("enablejsapi")<0)f.src+="&enablejsapi=1";
+  if(f.src.indexOf("origin=")<0)f.src+="&origin="+encodeURIComponent(location.origin);
+
+  var player=null;
+  window.onYouTubeIframeAPIReady=function(){
+    player=new YT.Player("ytbg",{});
+  };
+  var s=document.createElement("script");
+  s.src="https://www.youtube.com/iframe_api";
+  document.head.appendChild(s);
+
+  var ic=document.createElement("div");
+  ic.className="pzi";
+  h.appendChild(ic);
+
+  var st=document.createElement("style");
+  st.textContent=
+   ".hero .pzi{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.8);z-index:6;font-size:64px;color:#fff;background:rgba(0,0,0,.55);width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}"+
+   ".hero .pzi.on{opacity:1;transform:translate(-50%,-50%) scale(1)}"+
+   ".hero>.pzi.pzi{display:flex!important}";
+  document.head.appendChild(st);
+
+  var tm;
+  function flash(t){
+    ic.textContent=t;
+    ic.classList.add("on");
+    clearTimeout(tm);
+    tm=setTimeout(function(){ic.classList.remove("on")},700);
+  }
+
+  /* telefonda ilk dokunusta sesi ac */
+  var unm=false;
+  document.addEventListener("touchend",function(){
+    if(unm||!player||!player.unMute)return;
+    unm=true;
+    try{player.unMute();player.setVolume(100)}catch(e){}
+  },true);
+
+  h.addEventListener("click",function(e){
+    if(e.target.closest(".xb,.sb,#hm,#hp,#mp,button,a,input"))return;
+    var tam=h.classList.contains("zm")||(window.matchMedia&&matchMedia("(orientation:landscape) and (max-height:500px)").matches);
+    if(!tam)return;
+    if(!player||!player.getPlayerState)return;
+    if(player.getPlayerState()===1){player.pauseVideo();flash("⏸")}
+    else{player.playVideo();flash("▶")}
+  },true);
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
