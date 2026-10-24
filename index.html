@@ -831,6 +831,100 @@ try{
   [s2,s3].forEach(function(s){ft?ft.parentNode.insertBefore(s,ft):document.body.appendChild(s)});
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v22: once film fotosu, sonra video ===== */
+(function(){
+try{
+  var POSTER="https://img.youtube.com/vi/r2Im3h6u5kI/maxresdefault.jpg"; /* kendi fotonu yuklersen buraya "doom.jpg" yaz */
+  var DELAY=3000; /* foto kac ms gorunsun */
+  var vp=document.querySelector(".hero .vp");
+  if(!vp)return;
+
+  var im=document.createElement("img");
+  im.className="pst";im.alt="";im.src=POSTER;
+  im.onerror=function(){
+    if(im.src.indexOf("hqdefault")<0&&POSTER.indexOf("youtube")>0)im.src="https://img.youtube.com/vi/r2Im3h6u5kI/hqdefault.jpg";
+  };
+  vp.insertBefore(im,vp.firstChild);
+
+  var st=document.createElement("style");
+  st.textContent=
+   ".hero .vp:not(.vgo) iframe{opacity:0!important}"+
+   ".hero .vp iframe{transition:opacity 1.2s}"+
+   ".hero .vp .pst{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.3);transition:opacity 1.2s;pointer-events:none}"+
+   ".hero .vp.vgo .pst{opacity:0}";
+  document.head.appendChild(st);
+
+  function go(){
+    var f=vp.querySelector("iframe");
+    try{f.contentWindow.postMessage(JSON.stringify({event:"command",func:"seekTo",args:[0,true]}),"*")}catch(e){}
+    vp.classList.add("vgo");
+  }
+  /* karsilama sayfasi aciksa o kapanana kadar bekle, sonra say */
+  function start(){
+    if(document.querySelector(".lp")){setTimeout(start,300);return}
+    setTimeout(go,DELAY);
+  }
+  start();
+}catch(e){console.error(e)}
+})();
+ /* ===== YAMA v23: TV+ tarzi hero ===== */
+(function(){
+try{
+  var h=document.querySelector(".hero");
+  if(!h||h.querySelector(".hx"))return;
+  var L=(typeof C!=="undefined"&&C&&C.length)?C:[];
+  var c=null;
+  for(var i=L.length-1;i>=0;i--){if(L[i][0]==="Doctor Doom"){c=L[i];break}}
+  if(!c)c=["Doctor Doom","Film","Yakında","Aksiyon","Marvel evreninin en tehlikeli kötü karakterlerinden biri."];
+  function esc(s){return String(s).replace(/[&<>"]/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]})}
+
+  /* eski hero yazilari/butonlari gizlenir (video ve kontroller kalir) */
+  Array.prototype.forEach.call(h.children,function(el){
+    var k=el.getAttribute("class")||"";
+    if(/(^|\s)(vp|xb|sb|pzb|pzi|lgz|hx)(\s|$)/.test(k))return;
+    el.classList.add("ho");
+  });
+
+  var meta=[c[1],c[2],c[3]].filter(Boolean).map(esc).join("&nbsp;&nbsp;|&nbsp;&nbsp;");
+  var hx=document.createElement("div");
+  hx.className="hx";
+  hx.innerHTML=
+   '<h2 class="hxt">'+esc(c[0])+'</h2>'+
+   '<div class="hxm"><span class="hxa">16+</span><span>'+meta+'</span></div>'+
+   '<p class="hxd">'+esc(c[4]||"")+'</p>'+
+   '<button type="button" class="hxl">Devamını gör</button>'+
+   '<button type="button" class="hxp"><i></i>Hemen izle</button>';
+  h.appendChild(hx);
+
+  var more=hx.querySelector(".hxl"),d=hx.querySelector(".hxd");
+  if((c[4]||"").length<110)more.style.display="none";
+  more.onclick=function(){
+    d.classList.toggle("op");
+    more.textContent=d.classList.contains("op")?"Daha az":"Devamını gör";
+  };
+  hx.querySelector(".hxp").onclick=function(e){
+    e.stopPropagation();
+    var p=document.getElementById("hp");
+    if(p)p.click();else h.click();
+  };
+  hx.addEventListener("click",function(e){e.stopPropagation()});
+
+  var st=document.createElement("style");
+  st.textContent=
+   ".hero .ho{display:none!important}"+
+   ".hero{display:flex;flex-direction:column;justify-content:center;align-items:flex-start}"+
+   ".hero .hx{position:relative;z-index:3;display:flex;flex-direction:column;align-items:flex-start;gap:14px;max-width:min(640px,100%);padding:clamp(24px,5vw,64px);box-sizing:border-box}"+
+   ".hero .hxt{margin:0;font-size:clamp(44px,8vw,96px);line-height:.95;text-transform:uppercase;letter-spacing:.01em;font-weight:800}"+
+   ".hero .hxm{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:15px;opacity:.9}"+
+   ".hero .hxa{border:1.5px solid currentColor;border-radius:50%;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}"+
+   ".hero .hxd{margin:0;font-size:clamp(14px,2vw,17px);line-height:1.55;opacity:.85;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}"+
+   ".hero .hxd.op{display:block;-webkit-line-clamp:unset}"+
+   ".hero .hxl{background:none;border:0;color:inherit;font:inherit;font-weight:700;font-size:14px;cursor:pointer;padding:0}"+
+   ".hero .hxp{display:inline-flex;align-items:center;gap:10px;margin-top:8px;padding:16px 30px;border:0;background:#f3e9d8;color:#12060c;font:inherit;font-weight:700;font-size:18px;cursor:pointer;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}"+
+   ".hero .hxp i{width:0;height:0;border-left:16px solid #12060c;border-top:10px solid transparent;border-bottom:10px solid transparent}";
+  document.head.appendChild(st);
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
