@@ -1065,57 +1065,18 @@ try{
   document.head.appendChild(st);
 }catch(e){console.error(e)}
 })();
- /* ===== YAMA v25: yuvarlak mikrofon ac/kapa ===== */
+ /* ===== YAMA v26: yuvarlak ses butonu (videonun sol altinda) ===== */
 (function(){
 try{
-  var streams=[],on=true;
-  var md=navigator.mediaDevices;
-  if(md&&md.getUserMedia&&!md.__oroHook){
-    var orig=md.getUserMedia.bind(md);
-    md.getUserMedia=function(c){
-      return orig(c).then(function(s){
-        if(s.getAudioTracks().length){
-          streams.push(s);
-          s.getAudioTracks().forEach(function(t){t.enabled=on});
-        }
-        return s;
-      });
-    };
-    md.__oroHook=1;
-  }
-
-  var b=document.createElement("button");
-  b.type="button";b.className="micr";b.setAttribute("aria-label","Mikrofon");
-  b.innerHTML='<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/><line class="sl" x1="4" y1="4" x2="20" y2="20"/></svg>';
-  document.body.appendChild(b);
-
-  b.onclick=function(){
-    on=!on;
-    streams.forEach(function(s){s.getAudioTracks().forEach(function(t){t.enabled=on})});
-    b.classList.toggle("off",!on);
-  };
-
   var st=document.createElement("style");
   st.textContent=
-   ".micr{position:fixed;right:16px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:99990;display:none;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:1px solid rgba(243,233,216,.5);background:#f3e9d8;color:#12060c;cursor:pointer;padding:0;box-shadow:0 4px 14px rgba(0,0,0,.4)}"+
-   ".micr.show{display:flex}"+
-   ".micr .sl{display:none}"+
-   ".micr.off{background:#a3202f;color:#fff;border-color:#a3202f}"+
-   ".micr.off .sl{display:block}";
+   ".hero .sb.sb.sb.sb.sb{display:flex!important;position:absolute;left:18px;right:auto;bottom:18px;width:46px;height:46px;padding:0;gap:0;justify-content:center;align-items:center;border-radius:50%;background:rgba(255,255,255,.08);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);opacity:.7;z-index:8}"+
+   ".hero .sb.sb.sb.sb.sb:hover,.hero .sb.sb.sb.sb.sb:active{opacity:1}"+
+   ".hero .sb input{display:none!important}"+
+   ".hero .sb button{font-size:20px;padding:0;line-height:1}"+
+   ".hero.zm>div.sb.sb.sb.sb.sb{position:fixed;left:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:50}"+
+   "@media(max-width:700px){.hero .sb.sb.sb.sb.sb{left:12px;bottom:12px}}";
   document.head.appendChild(st);
-
-  /* eski mikrofon secici / seviye cubugunu gizle (adi mic ile baslayan elemanlar) */
-  var re=/(^|[-_\s])mic/i;
-  function tick(){
-    streams=streams.filter(function(s){return s.getAudioTracks().some(function(t){return t.readyState==="live"})});
-    b.classList.toggle("show",streams.length>0);
-    document.querySelectorAll("[id],[class]").forEach(function(el){
-      if(el===b||b.contains(el)||el.contains(b))return;
-      var k=(el.id||"")+" "+((el.getAttribute("class")||""));
-      if(re.test(k)&&!/micr/.test(k))el.style.display="none";
-    });
-  }
-  setInterval(tick,700);
 }catch(e){console.error(e)}
 })();
 </script>
