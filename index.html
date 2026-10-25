@@ -1046,52 +1046,27 @@ try{
   new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});
 }catch(e){console.error(e)}
 })();
- <!-- v34: 3 sn poster + orta ikon kaldır -->
-<style>
-  #doomPoster{position:absolute;inset:0;z-index:50;background:#000 url('doom-poster.webp') center/cover no-repeat;transition:opacity .6s ease;pointer-events:none}
-  #doomPoster.gizle{opacity:0}
-</style>
+ <!-- v35: ortadaki küçük simgeyi konumdan bulup gizle -->
 <script>
 (function(){
-  function basla(){
+  function temizle(){
     var fr = document.querySelector('iframe[src*="youtube"]');
     if(!fr) return;
     var kutu = fr.parentElement;
-    if(getComputedStyle(kutu).position==='static') kutu.style.position='relative';
-
-    // poster
-    var p = document.createElement('div');
-    p.id='doomPoster';
-    kutu.appendChild(p);
-
-    // video 3 sn sonra başlasın
-    var src = fr.src;
-    fr.src = 'about:blank';
-    setTimeout(function(){
-      fr.src = src;
-      p.classList.add('gizle');
-      setTimeout(function(){p.remove();},700);
-    },3000);
-
-    // ortadaki play/pause simgesini kaldır (dokununca durdurma çalışmaya devam eder)
-    var sesRe = /sound|mute|vol|mic|ses|speaker/i;
-    var ikonRe = /play|pause|center|orta|tap|icon/i;
-    var kapat = function(){
-      kutu.querySelectorAll('*').forEach(function(el){
-        if(el===fr || el.id==='doomPoster' || el.contains(fr)) return;
-        var tanim = (el.className||'')+' '+(el.id||'');
-        if(sesRe.test(tanim)) return;
-        var t = (el.textContent||'').trim();
-        if(ikonRe.test(tanim) || /^(▶|⏸|►|❚❚|II)$/.test(t)){
-          el.style.setProperty('display','none','important');
-        }
-      });
-    };
-    kapat();
-    new MutationObserver(kapat).observe(kutu,{childList:true,subtree:true});
+    var r = kutu.getBoundingClientRect();
+    var cx = r.left + r.width/2, cy = r.top + r.height/2;
+    kutu.querySelectorAll('*').forEach(function(el){
+      if(el===fr || el.id==='doomPoster' || el.contains(fr)) return;
+      var b = el.getBoundingClientRect();
+      if(!b.width || b.width > 160 || b.height > 160) return;
+      var ex = b.left + b.width/2, ey = b.top + b.height/2;
+      // kutunun ortasına yakın + küçük = orta simge
+      if(Math.abs(ex-cx) < r.width*0.15 && Math.abs(ey-cy) < r.height*0.2){
+        el.style.setProperty('display','none','important');
+      }
+    });
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',basla);
-  else setTimeout(basla,300);
+  setInterval(temizle, 500);
 })();
 </script>
 </script>
