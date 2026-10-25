@@ -1072,6 +1072,33 @@ try{
   new MutationObserver(sil).observe(document.body,{childList:true,subtree:true});
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v37: durunca foto kapat, YouTube simgesi gorunmesin ===== */
+(function(){
+try{
+  var h=document.querySelector(".hero"),vp=h&&h.querySelector(".vp"),f=vp&&vp.querySelector("iframe");
+  if(!vp||!f)return;
+  var cv=document.createElement("div");
+  cv.className="pcv";
+  vp.appendChild(cv);
+  var st=document.createElement("style");
+  st.textContent=".hero .vp .pcv{position:absolute;inset:0;z-index:3;background:#000 url('doom-poster.webp') center/cover no-repeat;opacity:0;pointer-events:none;transition:opacity .15s}.hero .vp .pcv.on{opacity:1}";
+  document.head.appendChild(st);
+  var tm;
+  window.addEventListener("message",function(e){
+    if(e.source!==f.contentWindow)return;
+    var d=e.data;
+    try{d=typeof d==="string"?JSON.parse(d):d}catch(x){return}
+    if(!d)return;
+    var s=null;
+    if(d.event==="onStateChange")s=d.info;
+    else if(d.event==="infoDelivery"&&d.info&&typeof d.info.playerState==="number")s=d.info.playerState;
+    if(s===null)return;
+    clearTimeout(tm);
+    if(s===2){cv.classList.add("on")}
+    else if(s===1){tm=setTimeout(function(){cv.classList.remove("on")},500)}
+  });
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
