@@ -1061,6 +1061,17 @@ try{
   document.head.appendChild(st);
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v36: orta durdur/oynat simgesi tamamen yok ===== */
+(function(){
+try{
+  var st=document.createElement("style");
+  st.textContent=".pzi,.hero .pzi,.hero>.pzi.pzi.pzi.pzi.pzi.pzi{display:none!important;visibility:hidden!important;opacity:0!important}";
+  document.head.appendChild(st);
+  function sil(){document.querySelectorAll(".pzi").forEach(function(e){e.remove()})}
+  sil();
+  new MutationObserver(sil).observe(document.body,{childList:true,subtree:true});
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
