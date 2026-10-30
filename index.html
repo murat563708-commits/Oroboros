@@ -1072,6 +1072,66 @@ try{
   },true);
 }catch(e){console.error(e)}
 })();
+ /* ===== YAMA v39: ana sayfada dokununca durdur/devam + YouTube'un kendi arayuzu hic gorunmesin ===== */
+(function(){
+try{
+  var YAKIN=1.06; /* video biraz daha yakin kirpilir, YouTube baslik seridi disarida kalir. 1 yaparsan kapanir */
+  var h=document.querySelector(".hero"),vp=h&&h.querySelector(".vp"),f=vp&&vp.querySelector("iframe"),cv=vp&&vp.querySelector(".pcv");
+  if(!h||!vp||!f)return;
+  if(!cv){cv=document.createElement("div");cv.className="pcv";vp.appendChild(cv)}
+
+  var ps=-1,pl=true,tmC,t0=0;
+  function send(fn){try{f.contentWindow.postMessage(JSON.stringify({event:"command",func:fn,args:[],id:1,channel:"widget"}),"*")}catch(e){}}
+  function cover(on){cv.classList.toggle("on",on)}
+
+  /* 1) Video gercekten oynamaya baslayana kadar YouTube hic gorunmesin, foto kalsin */
+  vp.classList.add("ow");
+  function reveal(){vp.classList.remove("ow")}
+  setTimeout(reveal,9000); /* emniyet: 9 sn sonra ne olursa olsun ac */
+  var iv=setInterval(function(){
+    if(!vp.classList.contains("ow")){clearInterval(iv);return}
+    if(ps===1&&vp.classList.contains("vgo")){if(!t0)t0=Date.now();if(Date.now()-t0>700)reveal()}else t0=0;
+  },200);
+
+  /* YouTube'dan oynuyor/durdu bilgisini al */
+  window.addEventListener("message",function(e){
+    if(e.source!==f.contentWindow)return;
+    var d=e.data;
+    try{d=typeof d==="string"?JSON.parse(d):d}catch(x){return}
+    if(!d)return;
+    var s=null;
+    if(d.event==="onStateChange")s=d.info;
+    else if(d.event==="infoDelivery"&&d.info&&typeof d.info.playerState==="number")s=d.info.playerState;
+    if(s===null)return;
+    ps=s;
+    if(s===1)pl=true;
+    if(s===2)pl=false;
+    if(s===0){pl=false;cover(true)} /* video bitince YouTube'un onerileri cikmasin */
+  });
+
+  /* 2) Ana sayfada videoya dokununca durdur / devam (simge cikmaz, durunca foto kapatir) */
+  function toggle(){
+    if(pl){pl=false;cover(true);send("pauseVideo")}
+    else{pl=true;send("playVideo");clearTimeout(tmC);tmC=setTimeout(function(){cover(false)},1500)}
+  }
+  document.addEventListener("click",function(e){
+    var t=e.target;
+    if(!t||!t.closest||!t.closest(".hero"))return;
+    if(t.closest(".xb,.spk,.hxp,.hxl,#hm,#hp,button,a,input,summary"))return;
+    e.stopImmediatePropagation(); /* eski "dokununca tam ekran" ve v38 cift tetiklemesin */
+    toggle();
+  },true);
+
+  var st=document.createElement("style");
+  st.textContent=
+   ".hero .vp.vp.ow iframe{opacity:0!important}"+
+   ".hero .vp.vp.ow .pst{opacity:1!important}"+
+   ".hero .vp iframe{transform:translate(-50%,-50%) scale("+YAKIN+")!important}"+
+   ".hero .vp .pcv{transition:opacity .08s}"+
+   ".hero{-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}";
+  document.head.appendChild(st);
+}catch(e){console.error(e)}
+})();
 </script>
 </body>
 </html>
